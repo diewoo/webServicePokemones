@@ -28,7 +28,7 @@ app.get('/db', function (request, response) {
 
 app.set('port', (process.env.PORT || 5000));
 
-app.get('/', function(request, response) {
+app.get('/d', function(request, response) {
   
   if(!mongoose.connection.readyState){
         mongoose.connect(uri);
