@@ -1,7 +1,18 @@
-//var cool = require('cool-ascii-faces');
 var express = require('express');
 var app = express();
-//var pg = require('pg');
+const mongoose=require('mongoose'),
+	Schema = mongoose.Schema,
+        ObjectId =  Schema.ObjectId;
+const uri ="mongodb://diego:12345@ds053196.mlab.com:53196/ulima-moviles";
+
+
+var schemaUsuario = new Schema({
+    id : ObjectId,
+    user : { type: String , required: true},
+    pass : { type: String , required: true},
+}, { strict: false });
+
+var Usuario = mongoose.model('usuario',schemaUsuario);
 
 app.get('/db', function (request, response) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
@@ -18,7 +29,23 @@ app.get('/db', function (request, response) {
 app.set('port', (process.env.PORT || 5000));
 
 app.get('/', function(request, response) {
-  response.send({user:"hernan",pass:"123"});
+  
+  if(!mongoose.connection.readyState){
+        mongoose.connect(uri);
+    }
+    var db =  mongoose.connection;
+    db.on('error', console.error.bind(console, 'connection error:'));
+    console.log("correcto!");
+    db.once('open', function callback () {
+        Usuario.findOne({},(err,dato)=>{
+            console.log(dato);
+            mongoose.disconnect();
+			res.send(dato);
+        });
+    });
+};
+  
+  
 });
 
 app.use(express.static(__dirname + '/public'));
