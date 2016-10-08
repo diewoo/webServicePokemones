@@ -5,17 +5,17 @@ var app = express();
 const mongoose=require('mongoose'),
 	Schema = mongoose.Schema,
         ObjectId =  Schema.ObjectId;
-		mongoose.Promise = global.Promise;
+		
 const uri ="mongodb://diego:12345@ds053196.mlab.com:53196/ulima-moviles";
-
+	
 
 var schemaUsuario = new Schema({
     id : ObjectId,
-    user : { type: String , required: true},
-    pass : { type: String , required: true},
-}, { strict: false });
+    user : String,
+    pass : String 
+});
 
-var Usuario = mongoose.model('usuario',schemaUsuario);
+var Usuario = mongoose.model('usuarios',schemaUsuario);
 /*
 app.get('/db', function (request, response) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
@@ -31,24 +31,42 @@ app.get('/db', function (request, response) {
 
 app.set('port', (process.env.PORT || 5002));
 
-app.get('/d', function(request, response) {	
+app.get('/insert', function(req,res) {	
+  
+	if(!mongoose.connection.readyState){
+        mongoose.connect(uri);
+    }
+    var db =  mongoose.connection;
+    db.on('error', console.error.bind(console, 'connection error'));
+    db.once('open', function callback () {
+        var usuario = new Usuario({user:"diego",pass:"1234"});
+        usuario.save((err)=>{
+            if(err) throw err
+            console.log("Guardado con exito!");
+            mongoose.disconnect(); 
+            
+        });
+    });
+});
+
+
+app.get('/', function(req,res) {	
   
   if(!mongoose.connection.readyState){
         mongoose.connect(uri);
     }
     var db =  mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
-    console.log("correcto!");
     db.once('open', function callback () {
-        Usuario.findOne({},(err,dato)=>{
-		
-            console.log(dato);
-			res.send(dato);
+        Usuario.find({},(err,dato)=>{
+			console.log(dato);
+			res.send('Intento');
             mongoose.disconnect();
 			
         });
     });
 });
+
   
 
 app.use(express.static(__dirname + '/public'));
