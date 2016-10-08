@@ -53,18 +53,14 @@ app.post('/registro', function( req , res ) {
     var db =  mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error'));
     db.once('open', function callback () {
-				console.log(req.body);
-				Usuario.findOne({username:req.body.username,password:req.body.password},(err,dato)=>{
-						var rpta={}
-						if(dato){
-							rpta=rptaregistro("Registro exitoso!",1)
-						}else{
-							rpta=rptaregistro("Registro Incorrecto!",0)
+				var rpta={}
+        var usuario = new Usuario(req.body);
+        usuario.save((err)=>{
+            rpta=rptaregistro("Registro realizado!",1);
 
-						}
-						mongoose.disconnect();
+            mongoose.disconnect();
 						res.send(rpta);
-
+        });
     });
 
 //console.log(req.body);
