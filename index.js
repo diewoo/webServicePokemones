@@ -18,6 +18,20 @@ var schemaUsuario = new Schema({
     password : String
 });
 
+var rptalogin=function( user,mensaje,codigo ){
+	return  {
+	  status:{
+	    	msg:mensaje,
+	    	cod:codigo
+	  },
+	  usuario:{
+	    	username:user,
+	    	password:null
+	  }
+	}
+
+};
+
 var Usuario = mongoose.model('users',schemaUsuario);
 app.set('port', (process.env.PORT || 5002));
 
@@ -44,7 +58,32 @@ app.post('/insert', function( req , res ) {
 //res.send(req.body);
 
 });
+//response login
+app.post('/login', function(req,res) {
+	if(!mongoose.connection.readyState){
+				mongoose.connect(uri);
+		}
+		var db =  mongoose.connection;
+		db.on('error', console.error.bind(console, 'connection error:'));
+		db.once('open', function callback () {
+				Usuario.findOne({username:req.body.username,password:req.body.password},(err,dato)=>{
+						var rpta={}
+						if(dato){
+							rpta=rptalogin(req.body.username,"Login exitoso!",1)
+						}else{
+							rpta=rptalogin(req.body.username,"Datos Incorrectos!",0)
 
+						}
+						mongoose.disconnect();
+						res.send(rpta);
+
+
+				});
+
+		});
+	//	res.send(rptalogin(req.body.username,"Registro exitoso!",1));
+
+});
 
 app.get('/', function(req,res) {
 
