@@ -1,0 +1,56 @@
+
+//Post registro
+{
+  "username":"diego",
+  "password":"123"
+}
+
+// response registro
+{
+  "status": {
+    "msg":"Registro correcto,Usuario no disponible",
+    "cod":1.0
+  },
+  "user":{
+    "username":"",
+    "password":""
+  }
+}
+
+// login post
+//igual
+
+
+// login response
+{
+  "status":{
+    "msg":"Bienvenido.Datos Incorrectos",
+    "cod":1.0
+  },
+  "usuario":{
+    "username":"diego",
+    "password":""
+  }
+}
+//////////////////////////////////////////////////////
+
+tenemos que tener una listado de los 150 pokemones con sus ids.
+
+//Response de get Pokemon / id
+{
+  "id":25,
+  "name":"Pikachu",
+  "nivel": "getRandomNivel()",
+  "img": "url",
+  "type":"type",
+  "desc":"Desc"
+}
+
+
+
+
+imagen en sprites
+nombre en forms
+nivel Hard code
+tipo en types
+ descripcion en characteristic/id  hasta el 30

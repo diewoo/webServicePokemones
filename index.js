@@ -3,44 +3,45 @@ var express = require('express');
 var bodyParser=require('body-parser');
 var app = express();
 //app.use(bodyParser.urlencoded({extended : true}));
+//parseo como json
 app.use(bodyParser.json())
-
 const mongoose=require('mongoose'),
 	Schema = mongoose.Schema,
         ObjectId =  Schema.ObjectId;
 
 const uri ="mongodb://diego:12345@ds053196.mlab.com:53196/ulima-moviles";
 
-
+//esquema de usuario
 var schemaUsuario = new Schema({
     id : ObjectId,
-    user : String,
-    pass : String
+    username : String,
+    password : String
 });
 
-var Usuario = mongoose.model('usuarios',schemaUsuario);
+var Usuario = mongoose.model('users',schemaUsuario);
 app.set('port', (process.env.PORT || 5002));
 
+//post de usuarios
 app.post('/insert', function( req , res ) {
 
-	/*if(!mongoose.connection.readyState){
+	if(!mongoose.connection.readyState){
         mongoose.connect(uri);
     }
     var db =  mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error'));
     db.once('open', function callback () {
 				console.log(req.body);
-        var usuario = new Usuario({user:"proxylocos",pass:"proxy"});
+        var usuario = new Usuario(req.body);
         usuario.save((err)=>{
             if(err) throw err
             console.log("Guardado con exito!");
             mongoose.disconnect();
 						res.send("ok");
         });
-    });*/
+    });
 
-console.log(req.body);
-res.send(req.body);
+//console.log(req.body);
+//res.send(req.body);
 
 });
 
