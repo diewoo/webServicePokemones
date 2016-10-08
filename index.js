@@ -1,6 +1,9 @@
 var cool = require('cool-ascii-faces');
 var express = require('express');
+var bodyParser=require('body-parser');
 var app = express();
+//app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.json())
 
 const mongoose=require('mongoose'),
 	Schema = mongoose.Schema,
@@ -18,22 +21,27 @@ var schemaUsuario = new Schema({
 var Usuario = mongoose.model('usuarios',schemaUsuario);
 app.set('port', (process.env.PORT || 5002));
 
-app.get('/insert', function(req,res) {
+app.post('/insert', function( req , res ) {
 
-	if(!mongoose.connection.readyState){
+	/*if(!mongoose.connection.readyState){
         mongoose.connect(uri);
     }
     var db =  mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error'));
     db.once('open', function callback () {
-        var usuario = new Usuario({user:"diego",pass:"1234"});
+				console.log(req.body);
+        var usuario = new Usuario({user:"proxylocos",pass:"proxy"});
         usuario.save((err)=>{
             if(err) throw err
             console.log("Guardado con exito!");
             mongoose.disconnect();
-
+						res.send("ok");
         });
-    });
+    });*/
+
+console.log(req.body);
+res.send(req.body);
+
 });
 
 
