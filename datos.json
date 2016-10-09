@@ -46,11 +46,18 @@ tenemos que tener una listado de los 150 pokemones con sus ids.
   "desc":"Desc"
 }
 
+{
+  "usuario":{
+
+    "arreglo":[
+
+    ]
+  }
+}
 
 
-
-imagen en sprites
-nombre en forms
+imagen en sprites ok!
+nombre en forms  ok!
 nivel Hard code
 tipo en types
  descripcion en characteristic/id  hasta el 30

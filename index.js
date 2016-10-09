@@ -2,6 +2,7 @@ var cool = require('cool-ascii-faces');
 var express = require('express');
 var bodyParser=require('body-parser');
 var app = express();
+var request = require('ajax-request');
 //app.use(bodyParser.urlencoded({extended : true}));
 //parseo como json
 app.use(bodyParser.json())
@@ -26,11 +27,27 @@ var rptalogin=function( user,mensaje,codigo ){
 	  },
 	  usuario:{
 	    	username:user,
-	    	password:null
+	    	password:null,
+				pokemones:[
+
+				]
+
 	  }
 	}
 
 };
+
+var rptaPokemon=function(idPoke,nombrePoke,imagen,tipo,desc){
+	return{
+		id:idPoke,
+		name:nombrePoke,
+		type:tipo,
+		nivel:Math.floor((Math.random() * 100) + 1),
+		img:imagen,
+		description:desc
+	}
+};
+
 var rptaregistro=function(mensaje,codigo ){
 	return  {
 	  status:{
@@ -41,6 +58,74 @@ var rptaregistro=function(mensaje,codigo ){
 
 };
 
+//libreria ajax request
+/* app.get('/data',function(req,res){
+	 request.post({
+		 url: 'http://ulima-parcial.herokuapp.com/login',
+		 data: {
+			 username:"proxys",
+			 password:"123"
+		 },
+		 headers: {}
+	 },function(err,ress,body){
+		 console.log(body);
+		 res.send(body);
+	 });
+});**/
+//traemos la data
+function obtenerDescripcion(id,correcto){
+	request({
+			url: 'https://pokeapi.co/api/v2/characteristic/' + id +'/' ,
+
+			method: 'GET',
+			data: {
+				query1: 'image'
+			}
+		}, function(err, ress, body) {
+		 var cuerpo=JSON.parse(body);
+		 var descripcion=cuerpo.descriptions;
+		 var desc='';
+			descripcion.map(function(element){
+					if(desc!=='undefined'){
+
+						if(desc=== ''){
+							desc=element.description;
+						}else{
+								desc= desc + ' , '+element.description ;
+						}
+					}
+
+			});
+		 	correcto( desc );
+		});
+
+}
+
+
+
+app.get('/pokedata/:id',function(req,res){
+	request({
+		url: 'https://pokeapi.co/api/v2/pokemon/' + req.params.id +'/' ,
+
+		method: 'GET',
+		data: {
+			query1: 'image'
+		}
+	}, function(err, ress, body) {
+	//	console.log('https://pokeapi.co/api/v2/pokemon/' + req.params.id);
+		var cuerpo = JSON.parse(body);
+		var name=cuerpo.forms[0].name;
+		var img=cuerpo.sprites.front_default;
+		var tipo=cuerpo.types[0].type.name;
+		 obtenerDescripcion(req.params.id,function(data){
+			 res.send(rptaPokemon(req.params.id,name,img,tipo,data));
+
+		});
+		// se obtiene la imagen del pokemon
+
+	});
+	//res.send(req.params.id );
+});
 var Usuario = mongoose.model('users',schemaUsuario);
 	app.set('port', (process.env.PORT || 5002));
 
