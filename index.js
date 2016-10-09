@@ -17,7 +17,7 @@ var schemaUsuario = new Schema({
     id : ObjectId,
     username : String,
     password : String,
-		pokemones: [{ id: Number }],
+		pokemones:{type:Array, id: [] }
 });
 
 var rptalogin=function( user,mensaje,codigo ){
@@ -147,13 +147,15 @@ app.post('/addpoke', function(req,res){
 		db.on('error', console.error.bind(console, 'connection error'));
 		db.once('open', function callback () {
 				var rpta={}
-				var usuario = new Usuario(req.body);
-				usuario.save((err)=>{
-						rpta=rptaregistro("Pokemon atrapado!",1);
-
-						mongoose.disconnect();
-						res.send(rpta);
-				});
+				Usuario.findOneAndUpdate({user:req.body.username}, { $set : { 'pokemones.$': req.body.id} },
+						function (err, doc) {
+    					if (err) {
+        			console.log(err);
+    				} else {
+							console.log(rptaregistro("Pokemon Atrapado!",1));
+      			res.send(rptaregistro("Pokemon Atrapado!",1));
+    		}
+});
 		});
 });
 
@@ -184,7 +186,7 @@ app.get('/pokedata/:id',function(req,res){
 
 	});
 });
-
+//model de usuario
 var Usuario = mongoose.model('users',schemaUsuario);
 	app.set('port', (process.env.PORT || 5002));
 
