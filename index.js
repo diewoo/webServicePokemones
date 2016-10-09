@@ -147,7 +147,7 @@ app.post('/addpoke', function(req,res){
 		db.on('error', console.error.bind(console, 'connection error'));
 		db.once('open', function callback () {
 				var rpta={}
-				Usuario.findOneAndUpdate({user:req.body.username}, { $set : { 'pokemones.$': req.body.id} },
+				Usuario.findOneAndUpdate({username:req.body.username}, { $push : { 'pokemones': req.body.id} },
 						function (err, doc) {
     					if (err) {
         			console.log(err);
