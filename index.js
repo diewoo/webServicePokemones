@@ -19,7 +19,22 @@ var schemaUsuario = new Schema({
     password : String,
 		pokemones:{type:Array, id: [] }
 });
+var rptaPokemones=function( pokes,mensaje,codigo ){
+	return  {
+	  status:{
+	    	msg:mensaje,
+	    	cod:codigo
+	  },
+	  	pokemones:pokes
 
+
+	  }
+
+
+};
+
+
+//rppta de login
 var rptalogin=function( user,mensaje,codigo ){
 	return  {
 	  status:{
@@ -139,6 +154,29 @@ function obtenerDescripcion(id,correcto){
 	//};
 });*/
 //metodo para atrapar
+app.get('/usuario/:username/pokemones',function(req,res){
+	if(!mongoose.connection.readyState){
+				mongoose.connect(uri);
+		}
+		var db =  mongoose.connection;
+		db.on('error', console.error.bind(console, 'connection error:'));
+		db.once('open', function callback () {
+				Usuario.findOne({username:req.params.username},"pokemones",(err,dato)=>{
+						var rpta={}
+						if(dato){
+							rpta=rptaPokemones(dato,"Mis Pokemones Atrapados!",1)
+						}else{
+							rpta=rptaPokemones(dato,"Casi papu!",0)
+
+						}
+						mongoose.disconnect();
+						res.send(rpta);
+
+
+				});
+
+		});
+});
 app.post('/addpoke', function(req,res){
 	if(!mongoose.connection.readyState){
 				mongoose.connect(uri);
@@ -147,7 +185,7 @@ app.post('/addpoke', function(req,res){
 		db.on('error', console.error.bind(console, 'connection error'));
 		db.once('open', function callback () {
 				var rpta={}
-				Usuario.findOneAndUpdate({username:req.body.username}, { $push : { 'pokemones': req.body.id} },
+				Usuario.findOneAndUpdate({username:req.body.username}, { $push : {'pokemones': req.body.id} },
 						function (err, doc) {
     					if (err) {
         			console.log(err);
