@@ -110,6 +110,70 @@ function obtenerPokemones(callback){
 	 });
 };
 
+var calcularNumerPokes = () => {
+	var numPokes = Math.floor((Math.random() * 6) + 1);
+	var ids = [];
+	var ranPoke;
+	var ok = false;
+	//console.log("El numero al alzar es : " + numPokes);
+
+	for (var i = 0; i < numPokes; i++) {
+		//console.log("valor de i : "+i);
+		ok = false;
+		while (!ok) {
+			var ran = Math.floor((Math.random() * 150) + 1);
+			//console.log("Random :" +  ran);
+			if (!isInclude(ids, ran)) {
+				ok = true;
+				ranPoke = ran;
+				ids.push(ran);
+				//console.log("Se agrego el numero : " + ran);
+			}
+		}
+	}
+	//console.log(ids.length);
+	return ids;
+}
+
+var isInclude = (array, val) => {
+	var include = false;
+	var i = 0;
+	while (!include && i < array.length) {
+		i++;
+		if (array[i] == val) {
+			include = true;
+		}
+	}
+	return include;
+}
+
+
+var getPromise = (id) => {
+	return new Promise(function (resolve, reject) {
+		request({
+			url: 'https://pokeapi.co/api/v2/pokemon/' + id + '/',
+
+			method: 'GET',
+			data: {
+				query1: 'image'
+			}
+		}, function (err, ress, body) {
+			var cuerpo = JSON.parse(body);
+			var name = cuerpo.forms[0].name;
+			var img = cuerpo.sprites.front_default;
+			var tipo = cuerpo.types[0].type.name;
+			if (id <= 30) {
+				obtenerDescripcion(id, function (data) {
+					resolve(rptaPokemon(id, name, img, tipo, data));
+				});
+			} else {
+				resolve(rptaPokemon(id, name, img, tipo, "No se tiene  descripcion disponible para este pokemon! "));
+			}
+		});
+	});
+}
+
+
 //traemos la descripciones del pokemon
 function obtenerDescripcion(id,correcto){
 	request({
@@ -196,7 +260,34 @@ app.post('/addpoke', function(req,res){
 });
 		});
 });
+app.get('/pokedata/pokemones', (req, res) => {
+	var pokemones = { pokemones: [] };
+	var promises = [];
+	var pokesID = calcularNumerPokes();
+	var numPokes = pokesID.length;
 
+	for (var i = 0; i < numPokes; i++) {
+		promises.push(getPromise(pokesID[i]));
+	}
+
+
+
+	Promise.all(promises)
+		.then(function (ress) {
+			console.log("Todas las promesas realizadas");
+			console.log(promises.length);
+			ress.forEach(function (item) {
+				pokemones.pokemones.push(item);
+			})
+			console.log(ress.length);
+			res.send(pokemones);
+		}, function (err) {
+			console.log(err);
+			res.send("Casi lo intento");
+		});
+
+
+});
 
 
 //metodo para traer pokemones
