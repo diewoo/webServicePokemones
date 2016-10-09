@@ -16,7 +16,8 @@ const uri ="mongodb://diego:12345@ds053196.mlab.com:53196/ulima-moviles";
 var schemaUsuario = new Schema({
     id : ObjectId,
     username : String,
-    password : String
+    password : String,
+		pokemones: [{ id: Number }],
 });
 
 var rptalogin=function( user,mensaje,codigo ){
@@ -27,11 +28,7 @@ var rptalogin=function( user,mensaje,codigo ){
 	  },
 	  usuario:{
 	    	username:user,
-	    	password:null,
-				pokemones:[
-
-				]
-
+	    	password:null
 	  }
 	}
 
@@ -57,6 +54,7 @@ var rptaregistro=function(mensaje,codigo ){
 	}
 
 };
+
 
 //libreria ajax request
 /* app.get('/data',function(req,res){
@@ -125,6 +123,7 @@ function obtenerDescripcion(id,correcto){
 		});
 
 }
+/*
  app.get('/atrapar',function(req,res){
 	 var pokemones=[];
 	 var numero=Math.floor((Math.random() * 10) + 1);
@@ -138,12 +137,29 @@ function obtenerDescripcion(id,correcto){
 		 });
 
 	//};
+});*/
+//metodo para atrapar
+app.post('/addpoke', function(req,res){
+	if(!mongoose.connection.readyState){
+				mongoose.connect(uri);
+		}
+		var db =  mongoose.connection;
+		db.on('error', console.error.bind(console, 'connection error'));
+		db.once('open', function callback () {
+				var rpta={}
+				var usuario = new Usuario(req.body);
+				usuario.save((err)=>{
+						rpta=rptaregistro("Pokemon atrapado!",1);
+
+						mongoose.disconnect();
+						res.send(rpta);
+				});
+		});
 });
 
 
 
-
-
+//metodo para traer pokemones
 app.get('/pokedata/:id',function(req,res){
 	request({
 		url: 'https://pokeapi.co/api/v2/pokemon/' + req.params.id +'/' ,
