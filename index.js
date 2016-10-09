@@ -36,7 +36,7 @@ var rptalogin=function( user,mensaje,codigo ){
 	}
 
 };
-
+//obtener el nivel x
 var rptaPokemon=function(idPoke,nombrePoke,imagen,tipo,desc){
 	return{
 		id:idPoke,
@@ -72,7 +72,32 @@ var rptaregistro=function(mensaje,codigo ){
 		 res.send(body);
 	 });
 });**/
-//traemos la data
+//obtener pokemones
+function obtenerPokemones(callback){
+	var ran = Math.floor((Math.random() * 30) + 1);
+
+	request({
+		url: 'https://pokeapi.co/api/v2/pokemon/' + ran +'/' ,
+
+		method: 'GET',
+		data: {
+			query1: 'image'
+		}
+	}, function(err, ress, body) {
+		console.log("ran = " + ran);
+		var cuerpo = JSON.parse(body);
+		var name=cuerpo.forms[0].name;
+		var img=cuerpo.sprites.front_default;
+		var tipo=cuerpo.types[0].type.name;
+		 obtenerDescripcion(ran,function(data){
+			 //console.log(rptaPokemon(ran,name,img,tipo,data));
+			 callback(rptaPokemon(ran,name,img,tipo,data));
+		});
+
+	 });
+};
+
+//traemos la descripciones del pokemon
 function obtenerDescripcion(id,correcto){
 	request({
 			url: 'https://pokeapi.co/api/v2/characteristic/' + id +'/' ,
@@ -96,10 +121,26 @@ function obtenerDescripcion(id,correcto){
 					}
 
 			});
-		 	correcto( desc );
+		 	correcto(desc);
 		});
 
 }
+ app.get('/atrapar',function(req,res){
+	 var pokemones=[];
+	 var numero=Math.floor((Math.random() * 10) + 1);
+	 console.log("numero " + numero);
+	 ///for(var i=1;i<=numero;i++){
+		 //console.log(i);
+		 obtenerPokemones(function(data){
+			 console.log(data);
+			 pokemones.push({name:"jaja"});
+			 res.send(pokemones)
+		 });
+
+	//};
+});
+
+
 
 
 
@@ -117,15 +158,17 @@ app.get('/pokedata/:id',function(req,res){
 		var name=cuerpo.forms[0].name;
 		var img=cuerpo.sprites.front_default;
 		var tipo=cuerpo.types[0].type.name;
-		 obtenerDescripcion(req.params.id,function(data){
-			 res.send(rptaPokemon(req.params.id,name,img,tipo,data));
-
-		});
-		// se obtiene la imagen del pokemon
+		if(req.params.id<=30){
+			obtenerDescripcion(req.params.id,function(data){
+				res.send(rptaPokemon(req.params.id,name,img,tipo,data));
+ 			});
+		}else{
+			res.send(rptaPokemon(req.params.id,name,img,tipo,"No se encuentra desccripcion"));
+		}
 
 	});
-	//res.send(req.params.id );
 });
+
 var Usuario = mongoose.model('users',schemaUsuario);
 	app.set('port', (process.env.PORT || 5002));
 
