@@ -187,7 +187,7 @@ function obtenerDescripcion(id, correcto) {
 
 }
 
-app.ger("/miprueba",()=>{
+app.ger("/miprueba",(req,res)=>{
 	res.send("si funciona la prueba");
 });
 
