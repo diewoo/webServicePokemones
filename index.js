@@ -17,7 +17,7 @@ var schemaUsuario = new Schema({
     id: ObjectId,
     username: String,
     password: String,
-	pokemones: { type: Array, id: [] }
+	pokemones: { type: Array, pokes: [] }
 });
 var rptaPokemones = function (pokes, mensaje, codigo) {
 	return {
@@ -131,6 +131,19 @@ var isInclude = (array, val) => {
 	return include;
 }
 
+getpokemonJson = ()=>{
+ return	{
+	id: 67,
+	name:"machoke",
+	type:"fighting",
+	nivel:52,
+	img:"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/67.png",
+	description:"No se tiene  descripcion disponible para este pokemon! "
+ }
+}
+
+
+
 
 var getPromise = (id) => {
 	return new Promise(function (resolve, reject) {
@@ -220,7 +233,7 @@ app.post('/addpoke', function (req, res) {
 	db.on('error', console.error.bind(console, 'connection error'));
 	db.once('open', function callback() {
 		var rpta = {}
-		Usuario.findOneAndUpdate({ username: req.body.username }, { $push: { 'pokemones': req.body.id } },
+		Usuario.findOneAndUpdate({ username: req.body.username }, { $push: { 'pokemones': getpokemonJson() } },
 			function (err, doc) {
 				if (err) {
 					console.log(err);
@@ -299,6 +312,27 @@ app.get("/mispokemones/:username", (req, res) => {
 					mongoose.disconnect();
 					res.send(pokemonesLista);
 				});
+			} else {
+				mongoose.disconnect();
+				res.send({});
+			}
+		});
+	});
+});
+
+app.get("/mispokemones2/:username", (req, res) => {
+	console.log("mispokemones");
+	var pokemones = { pokemones: [] };
+	if (!mongoose.connection.readyState) {
+		mongoose.connect(uri);
+	}
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function callback() {
+		Usuario.findOne({ username: req.params.username }, "pokemones", (err, dato) => {
+			if (dato) {
+				res.send({pokemones:dato.pokemones});
+				
 			} else {
 				mongoose.disconnect();
 				res.send({});
@@ -401,6 +435,9 @@ app.get('/', function (req, res) {
         });
     });
 });
+
+
+
 
 
 
