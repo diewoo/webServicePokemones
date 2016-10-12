@@ -32,6 +32,7 @@ var rptaPokemones = function (pokes, mensaje, codigo) {
 };
 
 
+
 //rppta de login
 var rptalogin = function (user, mensaje, codigo) {
 	return {
@@ -185,6 +186,10 @@ function obtenerDescripcion(id, correcto) {
 	});
 
 }
+
+app.ger("/miprueba",()=>{
+	res.send("si funciona la prueba");
+});
 
 //metodo para atrapar
 app.get('/usuario/:username/pokemones', function (req, res) {
