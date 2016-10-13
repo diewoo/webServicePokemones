@@ -233,7 +233,7 @@ app.post('/addpoke', function (req, res) {
 	db.on('error', console.error.bind(console, 'connection error'));
 	db.once('open', function callback() {
 		var rpta = {}
-		Usuario.findOneAndUpdate({ username: req.body.username }, { $push: { 'pokemones': getpokemonJson() } },
+		Usuario.findOneAndUpdate({ username: req.body.username }, { $push: { 'pokemones': req.body.pokemones	} },
 			function (err, doc) {
 				if (err) {
 					console.log(err);
@@ -295,7 +295,7 @@ var getMisPokemones = (listPokemoness, correcto) => {
 
 };
 
-app.get("/mispokemones/:username", (req, res) => {
+app.get("/mispokemones2/:username", (req, res) => {
 	console.log("mispokemones");
 	var pokemones = { pokemones: [] };
 	if (!mongoose.connection.readyState) {
@@ -320,7 +320,7 @@ app.get("/mispokemones/:username", (req, res) => {
 	});
 });
 
-app.get("/mispokemones2/:username", (req, res) => {
+app.get("/mispokemones/:username", (req, res) => {
 	console.log("mispokemones");
 	var pokemones = { pokemones: [] };
 	if (!mongoose.connection.readyState) {
@@ -330,9 +330,11 @@ app.get("/mispokemones2/:username", (req, res) => {
 	db.on('error', console.error.bind(console, 'connection error:'));
 	db.once('open', function callback() {
 		Usuario.findOne({ username: req.params.username }, "pokemones", (err, dato) => {
+
 			if (dato) {
+						mongoose.disconnect();
 				res.send({pokemones:dato.pokemones});
-				
+
 			} else {
 				mongoose.disconnect();
 				res.send({});
