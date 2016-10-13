@@ -332,12 +332,13 @@ app.get("/mispokemones/:username", (req, res) => {
 		Usuario.findOne({ username: req.params.username }, "pokemones", (err, dato) => {
 
 			if (dato) {
-						mongoose.disconnect();
+				mongoose.disconnect();
 				res.send({pokemones:dato.pokemones});
 
 			} else {
 				mongoose.disconnect();
-				res.send({});
+				console.log({	pokemones:dato.pokemones});
+				res.send({pokemones:dato.pokemones});
 			}
 		});
 	});
